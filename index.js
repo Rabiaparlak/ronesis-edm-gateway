@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const config = test ? testConfig : realConfig;
-const PORT = 4200;
+const PORT = 5570;
 
 // Sadece TEST ortamında TLS doğrulamasını kapat (prod'da ASLA!)
 const agent = new https.Agent({ rejectUnauthorized: false });
@@ -364,5 +364,5 @@ app.listen(PORT, async () => {
   } catch (e) {
     console.warn("⚠️ API listesi başlangıç yüklenemedi:", e.message);
   }
-  console.log(`🚀 Server http://localhost:${PORT} üzerinde çalışıyor`);
+  console.log(`🚀 Server http://localhost:${5570} üzerinde çalışıyor`);
 });
