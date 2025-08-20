@@ -64,7 +64,6 @@ const GET_API_LIST = `
 `;
 
 const ACCESS_KEY = process.env.RNS_ACCESS_KEY || "Ronesans09!!**";
-console.log("ACCESS_KEY", ACCESS_KEY);
 
 // Cache
 const API_LIST_TTL_MS = 2 * 60 * 1000; // 2 dk
@@ -170,15 +169,15 @@ async function fetchApiList() {
     }
   }
 
-  if (test) {
-    list.push({
-      dosya_no: 7081,
-      api_url: "https://192.168.1.101:7081",
-      api_url_gql: "https://192.168.1.101:7081/graphql",
-      client_domain: "http://192.168.1.101:4400",
-      topic: null,
-    });
-  }
+  // if (test) {
+  list.push({
+    dosya_no: 7081,
+    api_url: "https://e788d8de0901.ngrok-free.app",
+    api_url_gql: "https://e788d8de0901.ngrok-free.app/graphql",
+    client_domain: "https://demo.ronesis.com",
+    topic: null,
+  });
+  // }
 
   return mapApiListToMap(list);
 }
