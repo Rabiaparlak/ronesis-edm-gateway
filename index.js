@@ -270,7 +270,7 @@ app.get("/kep/login", async (req, res) => {
 });
 
 // ---- 3.2) OAuth callback ----
-app.get("/panel/edm-kep/hesaplar", async (req, res) => {
+app.get("/panel/edm-kep", async (req, res) => {
   try {
     const { code, state } = req.query;
     if (!code || !state) {
