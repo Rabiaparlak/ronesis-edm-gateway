@@ -173,9 +173,9 @@ async function fetchApiList() {
   if (test) {
     list.push({
       dosya_no: 7081,
-      api_url: "https://localhost:7081",
-      api_url_gql: "https://localhost:7081/graphql",
-      client_domain: "http://localhost:4400",
+      api_url: "https://192.168.1.101:7081",
+      api_url_gql: "https://192.168.1.101:7081/graphql",
+      client_domain: "http://192.168.1.101:4400",
       topic: null,
     });
   }
@@ -207,7 +207,7 @@ async function refreshApiList(force = false) {
 async function resolveApiInfo(dosyaNo) {
   if (!dosyaNo) {
     return {
-      graphqlEndpoint: "https://localhost:7081/graphql",
+      graphqlEndpoint: "https://demo-api.ronesis.com/graphql",
       projectUrl: null,
     };
   }
@@ -221,7 +221,7 @@ async function resolveApiInfo(dosyaNo) {
   }
   return (
     apiListCache.map.get(String(dosyaNo)) ?? {
-      graphqlEndpoint: "https://localhost:7081/graphql",
+      graphqlEndpoint: "https://demo-api.ronesis.com/graphql",
       projectUrl: null,
     }
   );
@@ -298,7 +298,7 @@ app.get("/panel/edm-kep", async (req, res) => {
       }
     `;
     const variables = { code };
-
+    console.log("graphqlEndpoint", graphqlEndpoint)
     const response = await fetch(graphqlEndpoint, {
       method: "POST",
       headers: {
