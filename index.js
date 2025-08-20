@@ -7,7 +7,7 @@ import https from "https";
 import { testConfig, realConfig } from "./config.js";
 
 
-const test = true;
+const test = false;
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
