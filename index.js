@@ -303,6 +303,7 @@ app.get("/panel/edm-kep", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        "permission_bypass_key": "Ronesans09!!**"
       },
       body: JSON.stringify({ query, variables }),
       agent, // test ortamı için
