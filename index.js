@@ -7,7 +7,7 @@ import https from "https";
 import { testConfig, realConfig } from "./config.js";
 
 
-const test = false;
+const test = true;
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -172,8 +172,8 @@ async function fetchApiList() {
   // if (test) {
   list.push({
     dosya_no: 7081,
-    api_url: "https://e788d8de0901.ngrok-free.app",
-    api_url_gql: "https://e788d8de0901.ngrok-free.app/graphql",
+    api_url: "https://fead0a94519f.ngrok-free.app",
+    api_url_gql: "https://fead0a94519f.ngrok-free.app/graphql",
     client_domain: "https://demo.ronesis.com",
     topic: null,
   });
