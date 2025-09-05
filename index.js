@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import fetch from "node-fetch"; // Node 16’da gerekli olabilir
 import https from "https";
 import { testConfig, realConfig } from "./config.js";
+import axios from "axios";
 
 
 const test = true;
@@ -172,8 +173,8 @@ async function fetchApiList() {
   // if (test) {
   list.push({
     dosya_no: 7081,
-    api_url: "https://fead0a94519f.ngrok-free.app",
-    api_url_gql: "https://fead0a94519f.ngrok-free.app/graphql",
+    api_url: "https://64297a84e466.ngrok-free.app",
+    api_url_gql: "https://64297a84e466.ngrok-free.app/graphql",
     client_domain: "https://demo.ronesis.com",
     topic: null,
   });
@@ -262,6 +263,29 @@ app.get("/kep/login", async (req, res) => {
     authUrl.searchParams.set("state", state);
 
     return res.redirect(authUrl.href);
+  } catch (err) {
+    console.error("OAuth yönlendirme hatası:", err);
+    return res.status(500).send("OAuth sayfası alınamadı.");
+  }
+});
+
+app.get("/kep/logout", async (req, res) => {
+  try {
+    const { user_id, dosyaNo } = req.query;
+    if (!user_id || !dosyaNo) {
+      return res.status(400).json({ message: "Kullanıcı bilgisi ve dosyaNo zorunludur" });
+    }
+    const { projectUrl } = await resolveApiInfo(dosyaNo);
+
+    const authUrl = new URL(config.LOGOUT_REDIRECT_URL);
+    authUrl.searchParams.set("clientId", config.EDM_CLIENT_ID);
+    authUrl.searchParams.set("redirectUri", projectUrl + '/panel');
+
+    // Logout isteğini sunucu üzerinden atıyoruz, kullanıcı yönlendirilmez
+    await axios.get(authUrl.href);
+
+    // Kullanıcıya bilgi dönebiliriz veya başka bir sayfaya yönlendirebiliriz
+    return res.json({ message: "Logout isteği başarıyla gönderildi." });
   } catch (err) {
     console.error("OAuth yönlendirme hatası:", err);
     return res.status(500).send("OAuth sayfası alınamadı.");
