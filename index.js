@@ -8,7 +8,7 @@ import { testConfig, realConfig } from "./config.js";
 import axios from "axios";
 
 
-const test = true;
+const test = false;
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -271,18 +271,63 @@ app.get("/kep/login", async (req, res) => {
 
 app.get("/kep/logout", async (req, res) => {
   try {
-    const { user_id, dosyaNo } = req.query;
-    if (!user_id || !dosyaNo) {
+    const { token, dosyaNo } = req.query;
+    if (!token || !dosyaNo) {
       return res.status(400).json({ message: "Kullanıcı bilgisi ve dosyaNo zorunludur" });
     }
-    const { projectUrl } = await resolveApiInfo(dosyaNo);
+    const { graphqlEndpoint, projectUrl } = await resolveApiInfo(dosyaNo);
+
+    const state = randomState();
+
+    // const authUrlXX = new URL(config.EDM_AUTH_ENDPOINT);
+    // authUrlXX.searchParams.set("response_type", "code");
+    // authUrlXX.searchParams.set("client_id", config.EDM_CLIENT_ID);
+    // authUrlXX.searchParams.set("redirect_uri", config.OAUTH_REDIRECT_URL);
+    // authUrlXX.searchParams.set("state", state);
 
     const authUrl = new URL(config.LOGOUT_REDIRECT_URL);
     authUrl.searchParams.set("clientId", config.EDM_CLIENT_ID);
-    authUrl.searchParams.set("redirectUri", projectUrl + '/panel');
+    authUrl.searchParams.set("redirectUri", `https://edm.ronesis.com/kep/login?token=${token}&dosyaNo=${dosyaNo}`);
+    return res.redirect(authUrl.href);
 
     // Logout isteğini sunucu üzerinden atıyoruz, kullanıcı yönlendirilmez
-    await axios.get(authUrl.href);
+    // await axios.get(authUrl.href);
+
+    //   const mutation = `
+    //   mutation Rns_Edm_Mail_Kep_LogOut {
+    //     rns_Edm_Mail_Kep_LogOut {
+    //       message
+    //     }
+    //   }
+    // `;
+    //   console.log("graphqlEndpoint", graphqlEndpoint)
+    //   const response = await fetch(graphqlEndpoint, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${token}`,
+    //       "permission-bypass-key": "Ronesans09!!",
+    //     },
+    //     body: JSON.stringify({ query }),
+    //     agent, // test ortamı için
+    //   });
+
+    //   const data = await response.json();
+
+    //   // State ve cookie'yi her durumda temizle
+    //   deleteState(state);
+    //   res.clearCookie("oauth_state");
+
+    //   if (response.ok) {
+    //     // Başarılıysa client_domain'e yönlendir
+    //     const fallback = DEFAULT_REDIRECT_URL;
+    //     const preferred = projectUrl && isAllowedRedirect(projectUrl) ? projectUrl : fallback;
+
+    //     // İsteğe bağlı: sonuca dair bir işaret koy
+    //     const target = buildRedirectUrl(preferred + '/panel/edm-mail-management', { kep_login: "success" });
+
+    //     return res.redirect(302, target);
+    //   }
 
     // Kullanıcıya bilgi dönebiliriz veya başka bir sayfaya yönlendirebiliriz
     return res.json({ message: "Logout isteği başarıyla gönderildi." });
@@ -304,7 +349,7 @@ app.get("/panel/edm-kep", async (req, res) => {
     if (!cookieState || cookieState !== state) {
       return res.status(400).json({ message: "Geçersiz veya uyumsuz state" });
     }
-
+    console.log("state", state)
     const ctx = getState(state);
     if (!ctx) {
       return res.status(400).json({ message: "State bulunamadı ya da süresi doldu" });
@@ -312,6 +357,7 @@ app.get("/panel/edm-kep", async (req, res) => {
 
     const { token, dosyaNo } = ctx;
     const { graphqlEndpoint, projectUrl } = await resolveApiInfo(dosyaNo);
+    console.log("LOOOOK", token, dosyaNo, graphqlEndpoint, projectUrl)
 
     const query = `
       query Rns_Edm_Mail_Kep_Giris($code: String!) {
@@ -338,7 +384,7 @@ app.get("/panel/edm-kep", async (req, res) => {
     // State ve cookie'yi her durumda temizle
     deleteState(state);
     res.clearCookie("oauth_state");
-
+    console.log("BURADAd", response)
     if (response.ok) {
       // Başarılıysa client_domain'e yönlendir
       const fallback = DEFAULT_REDIRECT_URL;
