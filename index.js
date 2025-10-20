@@ -304,9 +304,9 @@ app.get("/kep/logout", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        "permission-bypass-key": "Ronesans09!!",
+        "permission-bypass-key": ACCESS_KEY,
       },
-      body: JSON.stringify({ query: mutation }), // ✅ DÜZELTİLDİ
+      body: JSON.stringify({ query: mutation }),
       agent, // test ortamı için
     });
     console.log("response", response)
@@ -368,7 +368,7 @@ app.get("/panel/edm-kep", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        "permission-bypass-key": "Ronesans09!!**",
+        "permission-bypass-key": ACCESS_KEY,
       },
       body: JSON.stringify({ query, variables }),
       agent, // test ortamı için
