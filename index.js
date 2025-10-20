@@ -173,8 +173,8 @@ async function fetchApiList() {
   // if (test) {
   list.push({
     dosya_no: 7081,
-    api_url: "https://64297a84e466.ngrok-free.app",
-    api_url_gql: "https://64297a84e466.ngrok-free.app/graphql",
+    api_url: "https://20f6788822fd.ngrok-free.app",
+    api_url_gql: "https://20f6788822fd.ngrok-free.app/graphql",
     client_domain: "https://demo.ronesis.com",
     topic: null,
   });
@@ -288,49 +288,44 @@ app.get("/kep/logout", async (req, res) => {
     const authUrl = new URL(config.LOGOUT_REDIRECT_URL);
     authUrl.searchParams.set("clientId", config.EDM_CLIENT_ID);
     authUrl.searchParams.set("redirectUri", `https://edm.ronesis.com/kep/login?token=${token}&dosyaNo=${dosyaNo}`);
+
+    const mutation = `
+    mutation Rns_Edm_Mail_Kep_LogOut {
+      rns_Edm_Mail_Kep_LogOut {
+        message
+      }
+    }
+  `;
+
+    console.log("graphqlEndpoint", graphqlEndpoint);
+
+    const response = await fetch(graphqlEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        "permission-bypass-key": "Ronesans09!!",
+      },
+      body: JSON.stringify({ query: mutation }), // ✅ DÜZELTİLDİ
+      agent, // test ortamı için
+    });
+    console.log("response", response)
+    const result = await response.json();
+    if (result.errors?.length) {
+      // GraphQL seviyesinde hata var
+      console.error("GraphQL hatası:", result.errors);
+      const message = result.errors[0]?.message || "Bilinmeyen bir hata oluştu.";
+      return res.status(400).send(message);
+    }
+
+    if (!response.ok) {
+      // HTTP seviyesinde hata
+      console.error("HTTP hatası:", await response.text());
+      return res.status(500).send("Sunucu hatası oluştu.");
+    }
+
     return res.redirect(authUrl.href);
 
-    // Logout isteğini sunucu üzerinden atıyoruz, kullanıcı yönlendirilmez
-    // await axios.get(authUrl.href);
-
-    //   const mutation = `
-    //   mutation Rns_Edm_Mail_Kep_LogOut {
-    //     rns_Edm_Mail_Kep_LogOut {
-    //       message
-    //     }
-    //   }
-    // `;
-    //   console.log("graphqlEndpoint", graphqlEndpoint)
-    //   const response = await fetch(graphqlEndpoint, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //       "permission-bypass-key": "Ronesans09!!",
-    //     },
-    //     body: JSON.stringify({ query }),
-    //     agent, // test ortamı için
-    //   });
-
-    //   const data = await response.json();
-
-    //   // State ve cookie'yi her durumda temizle
-    //   deleteState(state);
-    //   res.clearCookie("oauth_state");
-
-    //   if (response.ok) {
-    //     // Başarılıysa client_domain'e yönlendir
-    //     const fallback = DEFAULT_REDIRECT_URL;
-    //     const preferred = projectUrl && isAllowedRedirect(projectUrl) ? projectUrl : fallback;
-
-    //     // İsteğe bağlı: sonuca dair bir işaret koy
-    //     const target = buildRedirectUrl(preferred + '/panel/edm-mail-management', { kep_login: "success" });
-
-    //     return res.redirect(302, target);
-    //   }
-
-    // Kullanıcıya bilgi dönebiliriz veya başka bir sayfaya yönlendirebiliriz
-    return res.json({ message: "Logout isteği başarıyla gönderildi." });
   } catch (err) {
     console.error("OAuth yönlendirme hatası:", err);
     return res.status(500).send("OAuth sayfası alınamadı.");
